@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Click Counter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <button id="counter-btn" type="button" aria-label="Click counter">0</button>
+    <script>
+      const btn = document.getElementById("counter-btn");
+
+      function setCount(n) {
+        btn.textContent = String(n);
+        btn.classList.remove("bump");
+        void btn.offsetWidth;
+        btn.classList.add("bump");
+      }
+
+      btn.addEventListener("animationend", () => btn.classList.remove("bump"));
+
+      btn.addEventListener("click", () => {
+        fetch("/click", { method: "POST" }).catch(() => {});
+      });
+
+      const es = new EventSource("/stream");
+      es.onmessage = (ev) => {
+        try {
+          const data = JSON.parse(ev.data);
+          if (typeof data.count === "number") setCount(data.count);
+        } catch {}
+      };
+    </script>
+  </body>
+</html>
