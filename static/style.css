@@ -69,6 +69,6 @@ body {
   }
 }
 
-#counter-btn.bump {
+#counter-btn.bump:not(:hover) {
   animation: bump 300ms ease;
 }
