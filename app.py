@@ -70,7 +70,11 @@ def stream():
         try:
             yield f"data: {json.dumps({'count': read_count()})}\n\n"
             while True:
-                value = q.get()
+                try:
+                    value = q.get(timeout=30)
+                except queue.Empty:
+                    yield ": keepalive\n\n"
+                    continue
                 yield f"data: {json.dumps({'count': value})}\n\n"
         finally:
             with subscribers_lock:
